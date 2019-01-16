@@ -7,8 +7,7 @@
             [ring.util.codec :as codec]))
 
 (defn h2
-  "Create a database specification for a h2 database. Opts should include a key
-  for :db which is the path to the database file."
+  "Create a Clojure JDBC database specification for a H2 database."
   [{:keys [db]
     :or   {db "h2.db"}
     :as   opts}]
@@ -30,9 +29,7 @@
                                      (str "?" query-params)))))
 
 (defn postgres
-  "Create a database specification for a postgres database. Opts should include
-  keys for :db, :user, and :password. You can also optionally set host and
-  port."
+  "Create a Clojure JDBC database specification for a Postgres database."
   [{:keys [host port db]
     :or   {host "localhost", port 5432, db ""}
     :as   opts}]
@@ -45,17 +42,14 @@
            (dissoc opts :host :port :db))))
 
 (defn mysql
-  "Create a database specification for a mysql database. Opts should include keys
-  for :db, :user, and :password. You can also optionally set host and port.
-  Delimiters are automatically set to \"`\"."
+  "Create a Clojure JDBC database specification for a MySQL or MariaDB database."
   [{:keys [host port db]
     :or   {host "localhost", port 3306, db ""}
     :as   opts}]
   (let [extra-connection-params (remove-required-keys opts)]
-    (merge {:classname   "com.mysql.jdbc.Driver"
+    (merge {:classname   "org.mariadb.jdbc.Driver"
             :subprotocol "mysql"
-            :subname     (make-subname host port db extra-connection-params)
-            :delimiters  "`"}
+            :subname     (make-subname host port db extra-connection-params)}
            (dissoc opts :host :port :db))))
 
 

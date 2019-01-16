@@ -30,18 +30,18 @@
 
 (expect-with-driver :mysql
   [[1 nil]]
-  ;; TODO - use the `rows` function from `metabse.query-processor-test`. Preferrably after it's moved to some sort of
-  ;; shared test util namespace
   (-> (data/dataset metabase.driver.mysql-test/all-zero-dates
         (data/run-mbql-query exciting-moments-in-history))
-      :data :rows))
+      qpt/rows))
 
 
 ;; make sure connection details w/ extra params work as expected
-(expect
-  (str "//localhost:3306/cool?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF8"
-       "&characterSetResults=UTF8&useLegacyDatetimeCode=true&useJDBCCompliantTimezoneShift=true"
-       "&useSSL=false&tinyInt1isBit=false")
+;; NOCOMMIT
+#_(expect
+  (str
+   "//localhost:3306/cool?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF8"
+   "&characterSetResults=UTF8&useLegacyDatetimeCode=true&useJDBCCompliantTimezoneShift=true"
+   "&useCompression=true&sessionVariables=sql_mode='ALLOW_INVALID_DATES'&useSSL=false&tinyInt1isBit=false")
   (:subname (sql-jdbc.conn/connection-details->spec :mysql {:host               "localhost"
                                                             :port               "3306"
                                                             :dbname             "cool"

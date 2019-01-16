@@ -266,8 +266,7 @@
 
 
 (def ^:private default-connection-args
-  "Map of args for the MySQL JDBC connection string.
-   Full list of is options is available here: http://dev.mysql.com/doc/connector-j/6.0/en/connector-j-reference-configuration-properties.html"
+  "Map of args for the MySQL/MariaDB JDBC connection string."
   { ;; 0000-00-00 dates are valid in MySQL; convert these to `null` when they come back because they're illegal in Java
    :zeroDateTimeBehavior          :convertToNull
    ;; Force UTF-8 encoding of results
@@ -277,7 +276,13 @@
    ;; Needs to be true to set useJDBCCompliantTimezoneShift to true
    :useLegacyDatetimeCode         :true
    ;; This allows us to adjust the timezone of timestamps as we pull them from the resultset
-   :useJDBCCompliantTimezoneShift :true})
+   :useJDBCCompliantTimezoneShift :true
+   :maximizeMysqlCompatibility    :true
+   ;; GZIP compress packets sent between Metabase server and MySQL/MariaDB database
+   :useCompression                :true
+   ;; allow inserting dates where value is '0000-00-00' -- this is disallowed by default on newer versions of MySQL,
+   ;; but we still want to test that we can handle it correctly for older ones
+   :sessionVariables              "sql_mode='ALLOW_INVALID_DATES'"})
 
 (def ^:private ^:const ^String default-connection-args-string
   (str/join \& (for [[k v] default-connection-args]
